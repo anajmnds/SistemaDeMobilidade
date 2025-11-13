@@ -45,6 +45,7 @@ public class ServicoCorrida {
 		Corrida novaCorrida = new Corrida(passageiro, localPartida, localDestino, categoria, metodoPagamento, distanciaKm);
 		
 		novaCorrida.setMotorista(motoristaLivre);
+		novaCorrida.setStatus("Aceita");
 		motoristaLivre.setStatus("Em corrida");
 		this.corridas.add(novaCorrida);
 		
@@ -75,7 +76,7 @@ public class ServicoCorrida {
 		
 		corrida.setStatus("Finalizada");
 		Motorista motorista = corrida.getMotorista();
-		motorista.setSenha("Online");
+		motorista.setStatus("Online");
 		
 		System.out.println("Corrida Finalizada! Pagamento de R$ " + valor + "efetuado.");
 	}
