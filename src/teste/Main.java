@@ -47,7 +47,7 @@ public class Main {
 				"senha123");
 		
 		servico.cadastrarMotorista(motorista1);
-		servico.cadrastarPassageiro(passageiro1);
+		servico.cadastrarPassageiro(passageiro1);
 				
 		System.out.println("Motorista Arthur e passageira Ana cadastrados!");
 	

@@ -30,11 +30,12 @@ public class ServicoCorrida {
 		
 	}
 	
-	public void cadrastarPassageiro (Passageiro passageiro) {
+	public void cadastrarPassageiro (Passageiro passageiro) {
 		this.passageiros.add(passageiro);
 	}
 	
-	public Corrida solicitarCorrida(Passageiro passageiro, String localPartida, String localDestino, Categoria categoria, MetodoPagamento metodoPagamento, double distanciaKm ) throws NenhumMotoristaDisponivelException {
+	public Corrida solicitarCorrida(Passageiro passageiro, String localPartida, String localDestino, Categoria categoria, MetodoPagamento metodoPagamento, double distanciaKm )
+			throws NenhumMotoristaDisponivelException {
 		
 		Motorista motoristaLivre = this.encontrarMotoristaDisponivel();
 		
@@ -46,7 +47,7 @@ public class ServicoCorrida {
 		
 		novaCorrida.setMotorista(motoristaLivre);
 		novaCorrida.setStatus("Aceita");
-		motoristaLivre.setStatus("Em corrida");
+		motoristaLivre.setStatus("Online");
 		this.corridas.add(novaCorrida);
 		
 		return novaCorrida;
@@ -63,37 +64,49 @@ public class ServicoCorrida {
 		return null;
 	}
 	
-	public void finalizarViagem(Corrida corrida)
-			throws PagamentoRecusadoException, SaldoInsuficienteException, EstadoInvalidoDaCorridaException {
-		
-		if (!corrida.getStatus().equals("Em Andamento")) {
-			throw new EstadoInvalidoDaCorridaException("O motorista só pode finalizar uma corrida que está Em Andamento.");
-		}
-		
-		MetodoPagamento metodo = corrida.getMetodoPagamento();
-		double valor = corrida.getValorEstimado();
-		metodo.processarPagamento(valor);
-		
-		corrida.setStatus("Finalizada");
-		Motorista motorista = corrida.getMotorista();
-		motorista.setStatus("Online");
-		
-		System.out.println("Corrida Finalizada! Pagamento de R$ " + valor + "efetuado.");
-	}
 	
-	public void cancelarCorrida(Corrida corrida)
-	throws EstadoInvalidoDaCorridaException {
-		
-		if(corrida.getStatus().equals("Em Andamento") || corrida.getStatus().equals("Finalizada")) {
-			throw new EstadoInvalidoDaCorridaException("O passageiro não pode cancelar uma corrida que já está em andamento ou foi finalizada.");
-		}
+	public void iniciarCorrida(Corrida corrida) throws EstadoInvalidoDaCorridaException {
+        if (!corrida.getStatus().equals("Aceita")) {
+            throw new EstadoInvalidoDaCorridaException("A corrida só pode ser iniciada se for aceita.");
+        }
 
-		corrida.setStatus("Cancelada");
-		
-		if(corrida.getMotorista() != null) {
-			corrida.getMotorista().setStatus("Online");
-			
-		}
-		System.out.println("Corrida foi cancelada.");
-	}
+        corrida.setStatus("Em Andamento");
+        System.out.println("Corrida iniciada.");
+    }
+
+    public void finalizarViagem(Corrida corrida)
+            throws PagamentoRecusadoException, SaldoInsuficienteException, EstadoInvalidoDaCorridaException {
+
+        if (!corrida.getStatus().equals("Em Andamento")) {
+            throw new EstadoInvalidoDaCorridaException(
+                    "Só é possível finalizar uma corrida que está em andamento.");
+        }
+
+        MetodoPagamento metodo = corrida.getMetodoPagamento();
+        double valor = corrida.getValorEstimado();
+
+        metodo.processarPagamento(valor);
+
+        corrida.setStatus("Finalizada");
+        Motorista motorista = corrida.getMotorista();
+        motorista.setStatus("Online");
+
+        System.out.println("Corrida finalizada. Pagamento de R$ " + valor + " efetuado.");
+    }
+
+    public void cancelarCorrida(Corrida corrida) throws EstadoInvalidoDaCorridaException {
+
+        if (corrida.getStatus().equals("Em Andamento") || corrida.getStatus().equals("Finalizada")) {
+            throw new EstadoInvalidoDaCorridaException(
+                    "Não é possível cancelar uma corrida que já está em andamento ou finalizada.");
+        }
+
+        corrida.setStatus("Cancelada");
+
+        if (corrida.getMotorista() != null) {
+            corrida.getMotorista().setStatus("Online");
+        }
+
+        System.out.println("Corrida cancelada.");
+    }
 }
